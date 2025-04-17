@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from subprocess import check_call
 
@@ -9,7 +9,7 @@ def main():
     args = arg_parser.receiver_first()
 
     if args.option == 'deps':
-        print 'iperf'
+        print ('iperf')
         return
 
     if args.option == 'receiver':

@@ -9,8 +9,8 @@ import yaml
 import subprocess
 from datetime import datetime
 
-import context
-from subprocess_wrappers import check_call, check_output, call
+import helpers.pantheon_context as pantheon_context
+from helpers.subprocess_wrappers import check_call, check_output, call
 
 
 def get_open_port():
@@ -31,12 +31,12 @@ def make_sure_dir_exists(d):
             raise
 
 
-tmp_dir = path.join(context.base_dir, 'tmp')
+tmp_dir = path.join(pantheon_context.base_dir, 'tmp')
 make_sure_dir_exists(tmp_dir)
 
 
 def parse_config():
-    with open(path.join(context.src_dir, 'config.yml')) as config:
+    with open(path.join(pantheon_context.src_dir, 'config.yml')) as config:
         return yaml.load(config)
 
 
@@ -70,7 +70,7 @@ def kill_proc_group(proc, signum=signal.SIGTERM):
 
 
 def apply_patch(patch_name, repo_dir):
-    patch = path.join(context.src_dir, 'wrappers', 'patches', patch_name)
+    patch = path.join(pantheon_context.src_dir, 'wrappers', 'patches', patch_name)
 
     if call(['git', 'apply', patch], cwd=repo_dir) != 0:
         sys.stderr.write('patch apply failed but assuming things okay '
@@ -102,7 +102,7 @@ def verify_schemes_with_meta(schemes, meta):
 
 
 def who_runs_first(cc):
-    cc_src = path.join(context.src_dir, 'wrappers', cc + '.py')
+    cc_src = path.join(pantheon_context.src_dir, 'wrappers', cc + '.py')
 
     cmd = [cc_src, 'run_first']
     run_first = check_output(cmd).strip()
@@ -148,7 +148,7 @@ def query_clock_offset(ntp_addr, ssh_cmd):
         cmd = ntp_cmds[side]
 
         fail = True
-        for _ in xrange(3):
+        for _ in range(3):
             try:
                 offset = check_output(cmd)
                 sys.stderr.write(offset)
@@ -175,9 +175,9 @@ def query_clock_offset(ntp_addr, ssh_cmd):
 
 
 def get_git_summary(mode='local', remote_path=None):
-    git_summary_src = path.join(context.src_dir, 'experiments',
+    git_summary_src = path.join(pantheon_context.src_dir, 'experiments',
                                 'git_summary.sh')
-    local_git_summary = check_output(git_summary_src, cwd=context.base_dir)
+    local_git_summary = check_output(git_summary_src, cwd=pantheon_context.base_dir)
 
     if mode == 'remote':
         r = parse_remote_path(remote_path)
